@@ -142,8 +142,30 @@ class PronounNode(NounNode):
 class CommonNounNode(NounNode):
     PREFIX = 'sh'
 
-    def __init__(self, word):
+    def __init__(self, word, article=None):
         assert word.startswith(self.PREFIX)
+        assert (article is None) or isinstance(article, ArticleNode)
+        self.word = word
+        self.article = article
+
+    def children(self):
+        if self.article:
+            return (self.article,)
+        else:
+            return None
+
+    def __str__(self):
+        if self.article:
+            return ' '.join((str(self.article), self.word))
+        else:
+            return self.word
+
+
+class ArticleNode(INode):
+    ALL_ARTICLES = frozenset(('ka', 'ki'))
+
+    def __init__(self, word):
+        assert word in self.ALL_ARTICLES
         self.word = word
 
     def children(self):
@@ -296,18 +318,29 @@ def parse_verb(tokens):
     raise ParseError("couldn't determine tense of verb: " + verb)
 
 def parse_noun(tokens):
+    #optional article
     word = tokens.next()
+    article = None
+    if word in ArticleNode.ALL_ARTICLES:
+        article = ArticleNode(word)
+        word = tokens.next()
+
+    #noun word
     noun = None
     if word in PronounNode.ALL_PRONOUNS:
+        if article:
+            raise ParseError('Pronouns can not have articles')
         noun = PronounNode(word)
     elif word.startswith(ProperNounNode.PREFIX):
+        if article:
+            raise ParseError('Proper nouns can not have articles')
         noun = ProperNounNode(word)
     elif word.startswith(CommonNounNode.PREFIX):
-        noun = CommonNounNode(word)
+        noun = CommonNounNode(word, article)
     else:
         raise ParseError("Can't determine the type of the noun: " + noun)
 
-    #check for possessive case
+    #optional possessive case
     tokens.push()
     if tokens.next() == PossessiveNounNode.PARTICLE:
         tokens.pop(restore=False)
