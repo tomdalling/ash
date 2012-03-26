@@ -22,7 +22,7 @@ class Dikt(object):
             return None
 
     def add(self, word, word_type, short_def, long_def=None):
-        assert len(word) > 1
+        assert len(word) > 0
         assert word_type in self.WORD_TYPES
         assert word not in self.dikt
         entry = {'type': word_type, 'def': short_def}
@@ -64,7 +64,7 @@ def remove_word(dikt, word):
         print 'Removed word from dictionary: ' + word
 
 def add_entry(dikt, word, word_type, short_def, long_def):
-    if len(word) <= 1:
+    if len(word) == 0:
         print 'Word is too small: ' + word
         return
 
