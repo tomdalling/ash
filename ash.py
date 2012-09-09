@@ -96,18 +96,18 @@ class NounNode(INode):
 class PossessiveNounNode(NounNode):
     PARTICLE = 'ko'
 
-    def __init__(self, owner, objekt):
-        assert isinstance(owner, NounNode)
-        assert isinstance(objekt, NounNode)
+    def __init__(self, possessor, possessee):
+        assert isinstance(possessor, NounNode)
+        assert isinstance(possessee, NounNode)
 
-        self.owner = owner
-        self.objekt = objekt
+        self.possessor = possessor
+        self.possessee = possessee
 
     def children(self):
-        return (self.objekt, self.owner)
+        return (self.possessee, self.possessor)
 
     def __str__(self):
-        return ' '.join((str(self.objekt), self.PARTICLE, str(self.owner)))
+        return ' '.join((str(self.possessee), self.PARTICLE, str(self.possessor)))
 
 
 class ProperNounNode(NounNode):
@@ -126,7 +126,7 @@ class ProperNounNode(NounNode):
 
 
 class PronounNode(NounNode):
-    ALL_PRONOUNS = frozenset(('Shi', 'Shae'))
+    ALL_PRONOUNS = frozenset(('Shi', 'Shae', 'Shinen', 'Shanen'))
 
     def __init__(self, word):
         assert word in self.ALL_PRONOUNS
@@ -140,32 +140,10 @@ class PronounNode(NounNode):
 
 
 class CommonNounNode(NounNode):
-    PREFIX = 'sh'
-
-    def __init__(self, word, article=None):
-        assert word.startswith(self.PREFIX)
-        assert (article is None) or isinstance(article, ArticleNode)
-        self.word = word
-        self.article = article
-
-    def children(self):
-        if self.article:
-            return (self.article,)
-        else:
-            return None
-
-    def __str__(self):
-        if self.article:
-            return ' '.join((str(self.article), self.word))
-        else:
-            return self.word
-
-
-class ArticleNode(INode):
-    ALL_ARTICLES = frozenset(('ka', 'ki'))
+    PREFIX = 's'
 
     def __init__(self, word):
-        assert word in self.ALL_ARTICLES
+        assert word.startswith(self.PREFIX)
         self.word = word
 
     def children(self):
@@ -176,31 +154,36 @@ class ArticleNode(INode):
 
 
 class VerbNode(INode):
-
+    PREFIX = 'v'
+    NEGATION_PREFIX = 'na'
     TENSES = {
         'PAST': 'et',
         'PRESENT': 'e',
         'FUTURE': 'em',
     }
 
-    PREFIX = 'v'
-
-    def __init__(self, base, tense):
+    def __init__(self, base, tense, negated=False):
         assert tense in self.TENSES
         assert base.startswith(self.PREFIX)
         self.base = base
         self.tense = tense
+        self.negated = negated
 
     def children(self):
         return None
 
     def __str__(self):
-        return self.base + self.TENSES[self.tense]
+        return ''.join((
+            (self.NEGATION_PREFIX if self.negated else ''),
+            self.base,
+            self.TENSES[self.tense]
+        ))
 
     def jsonDict(self):
         j = super(VerbNode, self).jsonDict()
         j['base'] = self.base
         j['tense'] = self.tense
+        j['negated'] = self.negated
         return j
 
 
@@ -209,6 +192,7 @@ class TokenizationError(Exception):
 
 
 class Tokenizer(object):
+    '''Breaks a string to word and punctuation tokens.'''
     ALPHABET = frozenset(string.ascii_letters + "'")
     PUNCTUATION = frozenset('.')
     WHITESPACE = frozenset(string.whitespace)
@@ -314,38 +298,35 @@ def parse_verb(tokens):
     verb = tokens.next()
     for tense, suffix in VerbNode.TENSES.iteritems():
         if verb.endswith(suffix):
-            return VerbNode(verb[:-len(suffix)], tense)
+            root = verb[:-len(suffix)]
+            negated = False
+            if verb.startswith(VerbNode.NEGATION_PREFIX):
+                negated = True
+                root = root[len(VerbNode.NEGATION_PREFIX):]
+            return VerbNode(root, tense, negated)
+
     raise ParseError("couldn't determine tense of verb: " + verb)
 
 def parse_noun(tokens):
-    #optional article
     word = tokens.next()
-    article = None
-    if word in ArticleNode.ALL_ARTICLES:
-        article = ArticleNode(word)
-        word = tokens.next()
 
     #noun word
     noun = None
     if word in PronounNode.ALL_PRONOUNS:
-        if article:
-            raise ParseError('Pronouns can not have articles')
         noun = PronounNode(word)
     elif word.startswith(ProperNounNode.PREFIX):
-        if article:
-            raise ParseError('Proper nouns can not have articles')
         noun = ProperNounNode(word)
     elif word.startswith(CommonNounNode.PREFIX):
-        noun = CommonNounNode(word, article)
+        noun = CommonNounNode(word)
     else:
-        raise ParseError("Can't determine the type of the noun: " + noun)
+        raise ParseError("Can't determine the type of the noun: " + word)
 
     #optional possessive case
     tokens.push()
     if tokens.next() == PossessiveNounNode.PARTICLE:
         tokens.pop(restore=False)
         owner = parse_noun(tokens)
-        return PossessiveNounNode(owner=owner, objekt=noun)
+        return PossessiveNounNode(possessor=owner, possessee=noun)
     else:
         tokens.pop(restore=True)
         return noun
