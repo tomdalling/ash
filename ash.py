@@ -11,7 +11,7 @@ class INode(object):
 
     @abstractmethod
     def children(self):
-        '''Returns a sequence of child INode objects, or None if the node is a
+        '''Returns a dict of child INode objects, or None if the node is a
         leaf.
         '''
         return None;
@@ -36,7 +36,10 @@ class INode(object):
 
         children = self.children()
         if children is not None:
-            j['children'] = [c.jsonDict() for c in children]
+            json_children = dict()
+            for name, child in children.iteritems():
+                json_children[name] = child.jsonDict()
+            j['children'] = json_children
 
         return j
 
@@ -51,7 +54,10 @@ class CommandNode(INode):
         self.noun = noun
 
     def children(self):
-        return (self.verb, self.noun)
+        return {
+            'verb':self.verb,
+            'object':self.noun
+        }
 
     def __str__(self):
         return str(self.verb) + ' ' + str(self.noun)
@@ -59,21 +65,45 @@ class CommandNode(INode):
 
 class StatementNode(INode):
 
-    def __init__(self, subject, verb, objekt):
+    def __init__(self, subject, verb, objekt=None, adjuncts=[]):
         assert isinstance(subject, NounNode)
         assert isinstance(verb, VerbNode)
-        assert isinstance(objekt, NounNode)
+        assert objekt is None or isinstance(objekt, NounNode)
+        for adj in adjuncts:
+            assert isinstance(adj, AdjunctNode)
 
         self.subject = subject
         self.verb = verb
         self.objekt = objekt
+        self.adjuncts = adjuncts
 
     def children(self):
-        return (self.subject, self.verb, self.objekt)
+        children = {
+            'subject': self.subject,
+            'verb': self.verb
+        }
+
+        if self.objekt is not None:
+            children['object'] = self.objekt
+
+        if len(self.adjuncts) > 0:
+            idx = 1
+            for adj in self.adjuncts:
+                children['adjunct' + str(idx)] = adj
+                idx += 1
+
+        return children
 
     def __str__(self):
-        return ' '.join((str(self.subject), str(self.verb), str(self.objekt)))
+        s = str(self.subject) + ' ' + str(self.verb)
 
+        if self.objekt is not None:
+            s += str(self.objekt)
+
+        for adj in self.adjuncts:
+            s += ' ' + str(adj)
+
+        return s
 
 class QuestionNode(INode):
     PARTICLE = 'ke'
@@ -83,10 +113,63 @@ class QuestionNode(INode):
         self.statement = statement
 
     def children(self):
-        return (self.statement,)
+        return {'statment': self.statement}
 
     def __str__(self):
         return self.PARTICLE + ' ' + str(self.statement)
+
+
+class AdjunctNode(INode):
+    pass
+
+
+class TemporalAdjunctNode(AdjunctNode):
+    TWORDS = {
+        'BEFORE': 'timet',
+        'DURING': 'time',
+        'AFTER': 'timem'
+    }
+
+    def __init__(self, temporality, noun):
+        assert temporality in self.TWORDS
+        assert isinstance(noun, NounNode)
+
+        self.temporality = temporality
+        self.noun = noun
+
+    def children(self):
+        return {'noun': self.noun}
+
+    def __str__(self):
+        return self.TWORDS[self.temporality] + ' ' + str(self.noun)
+
+    def jsonDict(self):
+        j = super(AdjunctNode, self).jsonDict()
+        j['temporality'] = self.temporality
+        return j
+
+
+class InstrumentalAdjunctNode(AdjunctNode):
+    INCLUSIVE_TWORD = 'tem'  # with
+    EXCLUSIVE_TWORD = 'temna'  # without
+
+    def __init__(self, inclusive, noun):
+        assert isinstance(noun, NounNode)
+
+        self.inclusive = bool(inclusive)
+        self.noun = noun
+
+    def children(self):
+        return {'noun': self.noun}
+
+    def __str__(self):
+        tword = (self.INCLUSIVE_TWORD if self.inclusive else self.EXCLUSIVE_TWORD)
+        return tword + ' ' + str(self.noun)
+
+    def jsonDict(self):
+        j = super(AdjunctNode, self).jsonDict()
+        j['inclusive'] = self.inclusive
+        return j
 
 
 class NounNode(INode):
@@ -104,7 +187,10 @@ class PossessiveNounNode(NounNode):
         self.possessee = possessee
 
     def children(self):
-        return (self.possessee, self.possessor)
+        return {
+            'possessee': self.possessee,
+            'possessor': self.possessor
+        }
 
     def __str__(self):
         return ' '.join((str(self.possessee), self.PARTICLE, str(self.possessor)))
@@ -191,6 +277,10 @@ class TokenizationError(Exception):
     pass
 
 
+class StopTokenIteration(StopIteration):
+    pass
+
+
 class Tokenizer(object):
     '''Breaks a string to word and punctuation tokens.'''
     ALPHABET = frozenset(string.ascii_letters + "'")
@@ -208,7 +298,7 @@ class Tokenizer(object):
     def next(self):
         while True:
             if self.pos >= len(self.text):
-                return TokenizationError('End of token stream')
+                raise StopTokenIteration()
 
             ch = self.text[self.pos]
             self.pos += 1
@@ -225,7 +315,7 @@ class Tokenizer(object):
 
     def next_word(self):
         start = self.pos
-        while self.text[self.pos] in self.ALPHABET:
+        while self.pos < len(self.text) and self.text[self.pos] in self.ALPHABET:
             self.pos += 1
         return self.text[start:self.pos]
 
@@ -251,30 +341,33 @@ def try_parse(parse_method, tokens):
     tokens.push()
     try:
         node = parse_method(tokens)
-    except ParseError:
+    except (ParseError, StopTokenIteration):
         tokens.pop(restore=True)
-        return False
+        return None
     else:
         tokens.pop(restore=False)
         return node
 
 def parse_clause(tokens):
     tokens.push()
-    first_word = tokens.next()
+    first_word = next(tokens, None)
     tokens.pop()
+
+    if first_word is None:
+        raise ParseError('Clause has no words')
 
     if first_word == QuestionNode.PARTICLE:
         return parse_question(tokens)
 
     statement = try_parse(parse_statement, tokens)
-    if statement:
+    if statement is not None:
         return statement
 
     command = try_parse(command_statement, tokens)
-    if command:
+    if command is not None:
         return command
 
-    raise ParseError("Failed to parse clause")
+    raise ParseError('Failed to parse clause')
 
 def parse_command(tokens):
     verb = parse_verb(tokens)
@@ -284,18 +377,50 @@ def parse_command(tokens):
 def parse_statement(tokens):
     subject = parse_noun(tokens)
     verb = parse_verb(tokens)
-    objekt = parse_noun(tokens)
-    return StatementNode(subject, verb, objekt)
+    objekt = try_parse(parse_noun, tokens)
+
+    adjuncts = []
+    while True:
+        adj = try_parse(parse_adjunct, tokens)
+        if adj is None:
+            break
+        else:
+            adjuncts.append(adj)
+
+    return StatementNode(subject, verb, objekt, adjuncts)
 
 def parse_question(tokens):
-    if tokens.next() != QuestionNode.PARTICLE:
+    if next(tokens) != QuestionNode.PARTICLE:
         raise ParseError('Question does not begin with correct particle')
 
     statement = parse_statement(tokens)
     return QuestionNode(statement)
 
+def parse_adjunct(tokens):
+    tword = next(tokens)
+    if not tword.startswith('t'):
+        raise ParseError('Adjunct does not start with t-word')
+
+    # check if TemporalAdjunctNode
+    for temporality, temporal_tword in TemporalAdjunctNode.TWORDS.iteritems():
+        if tword == temporal_tword:
+            noun = parse_noun(tokens)
+            return TemporalAdjunctNode(temporality, noun)
+
+    # check if InstrumentalAdjunctNode
+    if tword == InstrumentalAdjunctNode.INCLUSIVE_TWORD:
+        noun = parse_noun(tokens)
+        return InstrumentalAdjunctNode(inclusive=True, noun=noun)
+    if tword == InstrumentalAdjunctNode.EXCLUSIVE_TWORD:
+        noun = parse_noun(tokens)
+        return InstrumentalAdjunctNode(inclusive=False, noun=noun)
+
+    # unrecognised tword
+    raise ParseError('Unrecognised t-word: ' + str(tword))
+
+
 def parse_verb(tokens):
-    verb = tokens.next()
+    verb = next(tokens)
     for tense, suffix in VerbNode.TENSES.iteritems():
         if verb.endswith(suffix):
             root = verb[:-len(suffix)]
@@ -308,7 +433,7 @@ def parse_verb(tokens):
     raise ParseError("couldn't determine tense of verb: " + verb)
 
 def parse_noun(tokens):
-    word = tokens.next()
+    word = next(tokens)
 
     #noun word
     noun = None
@@ -323,7 +448,7 @@ def parse_noun(tokens):
 
     #optional possessive case
     tokens.push()
-    if tokens.next() == PossessiveNounNode.PARTICLE:
+    if next(tokens, None) == PossessiveNounNode.PARTICLE:
         tokens.pop(restore=False)
         owner = parse_noun(tokens)
         return PossessiveNounNode(possessor=owner, possessee=noun)
@@ -334,9 +459,18 @@ def parse_noun(tokens):
 if __name__ == '__main__':
     if '--test' in sys.argv:
         import doctest
-        doctest.testmod()
-    else:
-        with open(sys.argv[1]) as f:
-            t = Tokenizer(f.read())
-            ast = parse(t)
-            print json.dumps(ast.jsonDict(), sort_keys=True, indent=4)
+        (failure_count, test_count) = doctest.testmod()
+        sys.exit(failure_count)
+
+    with open(sys.argv[1]) as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith('#') or len(line) == 0:
+                continue
+            else:
+                t = Tokenizer(line)
+                ast = parse(t)
+                if next(t, None) is not None:
+                    raise ParseError('Unparsed tokens remaining')
+                else:
+                    print json.dumps(ast.jsonDict(), sort_keys=True, indent=4)
