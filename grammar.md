@@ -27,8 +27,22 @@
 
 Ash uses subject-verb-object order, the same as English.
 
+C = Clause
+S = Subject
+V = Verb
+Od = Direct object
+Oi = Indirect object
+Q = Question
+ka = Question particle
+I = Command
 
-## Verb tenses
+Intransitive verb: C -> S V
+  Transitive verb: C -> S V Od
+Ditransitive verb: (not done yet, but probably C -> S V Od Oi)
+         Question: Q -> ka C
+          Command: I -> V Od
+
+## Tenses
 
 There are three verb tenses in Ash: past, present and future. Past-tense
 verbs have the suffix "et". Present-tense verbs have the suffix "e".
@@ -45,10 +59,32 @@ Examples:
     >>> Shi vekem shacafe
     I will drink coffee
 
-    >>> Shi veke shacafe time {now}
-    I am drinking coffee
-    (literally: I drink coffee during/at now)
+## Aspect
 
+Ash has no aspects, just like German. This means that there is no way to
+distinguish between "I eat" and "I am eating". See the section on auxilliary
+verbs for more info.
+
+## Mood
+
+The indicative mood (factual statements) is the default.
+
+The subjunctive mood does not exist in Ash.
+
+The imperative mood (commands) is implemented by moving the verb to the front,
+and ommiting the subject. The subject is implied to be "you".
+
+The interogative mood (questions) is implemented by putting the question
+particle "ka" in front of a statement. This turns the statement into a
+question. As an example in English "you ate the cake" becomes "did you eat the
+cake?" just by putting "ka" at the front of the sentence.
+
+The potential mood does not exist in Ash. All statements are considered
+certain, unless adverbs like "possibly" are used to indicate uncertainty.
+
+TODO: The conditional mood (if this, then that)
+
+TODO: The optative/jussive moods. Need a way to indicate "should", "can", etc.
 
 ## Verb negation
 
@@ -63,6 +99,88 @@ Examples:
     I did not drink your coffee
     (Literally: I not-drank coffee of you)
 
+## Auxilliary verbs
+
+Ash does not have auxilliary verbs. This section will explain how English
+auxilliary verbs are eliminted when translating into Ash.
+
+When "do" or "did" are used for emphasis, those words are just removed from the
+sentence. For example:
+
+    I did drink coffee -> I drank coffee
+    I do drink coffee -> I drink coffee
+
+The word "will" is often used in English to indicate that that something will
+happen in the future. Ash has a future tense, which is used instead of "will".
+For example:
+    
+    >>>> Shi vekem shacafe
+    I will drink coffee
+    ("vekem" translates into "will drink" because it has future tense)
+
+Ash does not have progressive aspect, or perfect aspect. There is only simple
+aspect. For example, the following six English sentences all translate into a
+single Ash sentence:
+
+    I ate
+    I have eaten
+    I have been eating
+    I was eating
+    I had eaten
+    I had been eating
+    >>>> Shi veset
+    (The closest translation is "I ate", which is simple past)
+
+When translating from English into Ash, sentences first need to be converted into
+simple past, and simple present. As an example:
+
+    I have traveled widely, but I have never been to Moscow.
+
+could be converted into:
+
+    I traveled widely, but never visited Moscow.
+
+Ash also does not have conjuctions like "but", so a better conversion would be:
+
+    I traveled widely. I did not visit Moscow.
+
+The words "did not visit" will be translated into a single, negated, past-tense
+verb, such as "navisitet".
+
+If you want to express present progressive, use a temporal adjunct to indicate
+that it is happening right now. For example:
+
+    >>> Shi veke shacafe time {now}
+    I am drinking coffee
+    (literally: I drink coffee during/at now)
+
+In English, auxilliary verbs are needed to form questions such as "did you drink
+my coffee?", but Ash uses a question particle, so the auxilliary verbs are not
+needed. For example:
+    
+    >>> ka Shae veket shacafe ko shi
+    Did you drink my coffee?
+    (Literally: [question particle] you drank coffee of me)
+
+Auxilliary verbs that express certainy in English, such as "could", "may",
+"might" and "will" are not needed. Verbs are certain by default. To express
+uncertainty, use an adverb such as "possibly". For example:
+
+   >>> Shi vekem shacafe
+   I will drink coffee
+   ("vekem" translates into "will drink" because verbs are certain by default)
+
+   >>> Shi {possibly} vekem shacafe
+   I might drink coffee
+   (Literally: I possibly will drink coffee)
+
+Ash does not have passive voice, which eliminates the need for some uses of the
+auxilliary verb "to be", such as "was", "were", and "being". For example, the
+passive sentence "We were attacked by the wolf" is turned into the active
+sentence "The wolf attacked us" before translation.
+
+TODO: Deontic modality ("should", "ought to", "can", etc.)
+TODO: Copula
 
 ## Comparative
 
@@ -72,6 +190,8 @@ Examples:
  - equal: kae
  - more: kaefil
  - than: kae
+
+TODO: most/least?
 
 Examples:
 
@@ -154,4 +274,8 @@ Examples:
 ## Conjuctions (and/but/yet/etc.)
 
 There are no conjuctions (yet) in Ash. Where a conjuction is used in
-English, Ash often uses an adjunct instead.
+English, Ash often breaks the sentence into multiple sentences. For example:
+
+    >>> Shinen vekem shacafe. Shinen vessem {cake}.
+    We will drink coffee and eat cake
+    (Literally: We will drink coffee. We will eat cake.)
