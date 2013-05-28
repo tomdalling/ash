@@ -98,7 +98,7 @@ class StatementNode(INode):
         s = str(self.subject) + ' ' + str(self.verb)
 
         if self.objekt is not None:
-            s += str(self.objekt)
+            s += ' ' + str(self.objekt)
 
         for adj in self.adjuncts:
             s += ' ' + str(adj)
