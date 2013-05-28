@@ -72,19 +72,40 @@ The indicative mood (factual statements) is the default.
 The subjunctive mood does not exist in Ash.
 
 The imperative mood (commands) is implemented by moving the verb to the front,
-and ommiting the subject. The subject is implied to be "you".
+and ommiting the subject. The subject is implied to be "you". This is
+similar to English. For example:
+
+    >>> Veke shacafe
+    Drink coffee
 
 The interogative mood (questions) is implemented by putting the question
 particle "ka" in front of a statement. This turns the statement into a
 question. As an example in English "you ate the cake" becomes "did you eat the
-cake?" just by putting "ka" at the front of the sentence.
+cake?" just by putting "ka" at the front of the sentence. For example:
 
-The potential mood does not exist in Ash. All statements are considered
-certain, unless adverbs like "possibly" are used to indicate uncertainty.
+    >>> ka shae veke shacafe
+    Do you drink coffee?
+
+The potential mood (epistemic modality) does not exist in Ash. All
+statements are considered certain, unless adverbs like "possibly" are
+used to indicate uncertainty.
+
+The deontic modality, which expresses the ability (e.g., "I can swim")
+or obligation (e.g. "I should swim") to do something, is implemented
+using two verb suffixes. These suffixes are mutually exclusive, meaning
+that you can not use both suffixes on the same word. The ability suffix
+"a" is used like so:
+
+    >>> Shi vekea shacafe
+    I can drink coffee
+
+The obligation suffix "o" is used like so:
+
+   >>> Shi vekeo shacafe
+   I should drink coffee
 
 TODO: The conditional mood (if this, then that)
 
-TODO: The optative/jussive moods. Need a way to indicate "should", "can", etc.
 
 ## Verb negation
 
@@ -113,7 +134,7 @@ sentence. For example:
 The word "will" is often used in English to indicate that that something will
 happen in the future. Ash has a future tense, which is used instead of "will".
 For example:
-    
+
     >>>> Shi vekem shacafe
     I will drink coffee
     ("vekem" translates into "will drink" because it has future tense)
@@ -157,10 +178,10 @@ that it is happening right now. For example:
 In English, auxilliary verbs are needed to form questions such as "did you drink
 my coffee?", but Ash uses a question particle, so the auxilliary verbs are not
 needed. For example:
-    
+
     >>> ka Shae veket shacafe ko shi
     Did you drink my coffee?
-    (Literally: [question particle] you drank coffee of me)
+    (Literally: [particle] you drank coffee of me)
 
 Auxilliary verbs that express certainy in English, such as "could", "may",
 "might" and "will" are not needed. Verbs are certain by default. To express
@@ -172,14 +193,46 @@ uncertainty, use an adverb such as "possibly". For example:
 
    >>> Shi {possibly} vekem shacafe
    I might drink coffee
-   (Literally: I possibly will drink coffee)
+   (Literally: I possibly will-drink coffee)
 
 Ash does not have passive voice, which eliminates the need for some uses of the
 auxilliary verb "to be", such as "was", "were", and "being". For example, the
 passive sentence "We were attacked by the wolf" is turned into the active
 sentence "The wolf attacked us" before translation.
 
-TODO: Deontic modality ("should", "ought to", "can", etc.)
+To indicate whether the subject has the ability to do something (e.g., "I can
+swim"), the suffix "a" is added to the end of the verb, after the tense.
+This is part of "deontic modality" in English. For example:
+
+    >>> Shi veke shacafe
+    I drink coffee
+
+    >>> Shi vekea shacafe
+    I can drink coffee (in the present)
+
+    >>> Shi vekema shacafe
+    I could drink coffee (in the future)
+
+    >>> Shi veketa shacafe
+    I could have drank coffee (in the past)
+
+To indicate that the subject "should" or "needs to" do something (e.g. "I
+should excercise more"), the suffix "o" is added to the end of the ver,
+after the tense. This is also part of "deontic modality" in English. For
+example:
+
+    >>> Shi vekeo shacafe
+    I should drink coffee (in the present)
+
+    >>> Shi vekemo shacafe
+    I should drink coffee (later, in the future)
+
+    >>> Shi veketo shacafe
+    I should have drank coffee (in the past)
+
+The "a" and "o" verb suffixes are mutually exclusive – that is, you can
+not use both of them on the same word.
+
 TODO: Copula
 
 ## Comparative
@@ -278,4 +331,5 @@ English, Ash often breaks the sentence into multiple sentences. For example:
 
     >>> Shinen vekem shacafe. Shinen vessem {cake}.
     We will drink coffee and eat cake
-    (Literally: We will drink coffee. We will eat cake.)
+    (Literally: We will-drink coffee. We will-eat cake.)
+
