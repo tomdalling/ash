@@ -333,3 +333,7 @@ English, Ash often breaks the sentence into multiple sentences. For example:
     We will drink coffee and eat cake
     (Literally: We will-drink coffee. We will-eat cake.)
 
+
+## TODO
+
+"this"/"that"/"here"/"there"/"yonder" are overlapping, and confusing
