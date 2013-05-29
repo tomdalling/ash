@@ -7,7 +7,7 @@ import textwrap
 
 
 class Dikt(object):
-    WORD_TYPES = frozenset(('noun', 'verb', 'pronoun', 'particle'))
+    WORD_TYPES = frozenset(('noun', 'verb', 'pronoun', 'particle', 'adjective'))
 
     def __init__(self):
         self.dikt = {}
@@ -16,12 +16,14 @@ class Dikt(object):
         return self.dikt.iteritems()
 
     def lookup(self, word):
+        word = word.lower()
         if word in self.dikt:
             return self.dikt[word]
         else:
             return None
 
     def add(self, word, word_type, short_def, long_def=None):
+        word = word.lower()
         assert len(word) > 0
         assert word_type in self.WORD_TYPES
         assert word not in self.dikt
@@ -38,7 +40,7 @@ class Dikt(object):
         json.dump(self.dikt, to_file)
 
     def load(self, from_file):
-        self.dikt =json.load(from_file)
+        self.dikt = json.load(from_file)
 
 
 def print_entry(word, entry):
@@ -51,10 +53,16 @@ def print_entry(word, entry):
 
 def lookup_word(dikt, word):
     entry = dikt.lookup(word)
-    if entry is None:
-        print 'No entry found for word "{0}"'.format(word)
-    else:
+    if entry is not None:
+        print 'Exact match found'
         print_entry(word, entry)
+    else:
+        num_found = 0
+        for ashword, entry in dikt:
+            if(fnmatch.fnmatch(ashword, word)):
+                print_entry(ashword, entry)
+                num_found += 1
+        print '{0} words found matching pattern "{1}"'.format(num_found, word)
 
 def remove_word(dikt, word):
     if dikt.lookup(word) is None:
@@ -69,7 +77,7 @@ def add_entry(dikt, word, word_type, short_def, long_def):
         return
 
     if dikt.lookup(word) is not None:
-        print 'Word already exists.'
+        print '!!! Word already exists !!!'
         lookup_word(dikt, word)
         return
 
@@ -84,7 +92,7 @@ def add_entry(dikt, word, word_type, short_def, long_def):
 
     dikt.add(word, word_type, short_def, long_def)
     print 'Added new word to dictionary: ' + word
-    lookup_word(dikt, word)
+    print_entry(word, dikt.lookup(word))
 
 def find_translation(dikt, english):
     print 'Searching for "{0}" in definitions...'.format(english)
@@ -106,13 +114,13 @@ def print_help():
             {cmd} <word>
                 Finds entry for <word>.
 
-            {cmd} <text>
+            {cmd} search <text>
                 Find entrys that contain <text> in the definition.
 
             {cmd} rm <word>
                 Removes <word> from the dictionary.
 
-            {cmd} add <word> <type> <short_definition> [--]
+            {cmd} add <type> <word> <short_definition> [--]
                 Adds <word> to the dictionary. If "--" is the last arg,
                 reads a longer definition from the standard input. <type>
                 must be one of the following:
@@ -140,7 +148,7 @@ if __name__ == '__main__':
             long_def = sys.stdin.read()
         else:
             long_def = None
-        add_entry(dikt, sys.argv[2], sys.argv[3], sys.argv[4], long_def)
+        add_entry(dikt, sys.argv[3], sys.argv[2], sys.argv[4], long_def)
         needs_save = True
     elif cmd == 'rm':
         remove_word(dikt, sys.argv[2])
