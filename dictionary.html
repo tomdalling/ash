@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <title>Ash Dictionary</title>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <style type="text/css">
+            h2 {
+                border-bottom: 1px solid black;
+                text-transform: capitalize;
+                margin-top: 2em;
+            }
+            dl {
+                margin-left: 2em;
+            }
+            dd {
+                margin-bottom: 1em;
+            }
+            dt {
+                border-top: 1px dotted grey;
+                font-style: italic;
+                padding-top: 1em;
+            }
+            dt:first-child {
+                border-top: none;
+                padding-top: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>The Ash Dictionary</h1>
+        <script>
+            function makeSection(title){
+                return $("<div></div>")
+                    .append($('<h2></h2>').text(title))
+                    .append($('<dl></dl>'))
+                    .appendTo('body');
+            }
+
+            function addDefinitionToSection(word, def, section){
+                var dl = section.find('dl');
+                dl.append($('<dt></dt>').text(word))
+                var dd = $('<dd></dd>').text(def.def);
+                dl.append(dd)
+                if(def.hasOwnProperty('long_def')){
+                    $('<pre></pre>').text(def.long_def).appendTo(dd);
+                }
+            }
+
+            $(function(){
+                $.getJSON('dictionary.json').done(function(data){
+                    var sections = {};
+
+                    $.each(data, function(word, definition){
+                        var sec = null;
+                        if(sections.hasOwnProperty(definition.type)){
+                            sec = sections[definition.type];
+                        } else {
+                            sec = makeSection(definition.type + 's');
+                            sections[definition.type] = sec;
+                        }
+
+                        addDefinitionToSection(word, definition, sec);
+                    });
+                }).fail(function(jqxhr, statusMsg, err){
+                    $('body').html('Failed to load dictionary<br />' + statusMsg + '<br/>' + err);
+                });
+            });
+        </script>
+    </body>
+</html>
