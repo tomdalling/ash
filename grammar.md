@@ -35,12 +35,13 @@ Oi = Indirect object
 Q = Question
 ka = Question particle
 I = Command
+kun = Indirect object particle
 
 Intransitive verb: C -> S V
   Transitive verb: C -> S V Od
-Ditransitive verb: (not done yet, but probably C -> S V Od Oi)
+Ditransitive verb: C -> S V Od kun Oi
          Question: Q -> ka C
-          Command: I -> V Od
+          Command: I -> V Od (kun Oi)
 
 ## Tenses
 
@@ -103,8 +104,6 @@ The obligation suffix "o" is used like so:
 
    >>> Shi vekeo shacafe
    I should drink coffee
-
-TODO: The conditional mood (if this, then that)
 
 
 ## Verb negation
@@ -233,7 +232,6 @@ example:
 The "a" and "o" verb suffixes are mutually exclusive – that is, you can
 not use both of them on the same word.
 
-TODO: Copula
 
 ## Comparative
 
@@ -248,12 +246,12 @@ TODO: most/least?
 
 Examples:
 
-    >>> kae {funny} kae Shi
-    As funny as me
+    >>> kae lut kae Shi
+    As good as me
 
-    >>> kaefil {fast} kae Shi
-    Faster than me
-    (literally: more fast than/as me)
+    >>> kaefil lut kae Shi
+    Better than me
+    (literally: more good than/as me)
 
 
 ## Genetive case (possession)
@@ -276,8 +274,9 @@ Examples:
 
 ## Adjuncts (additional info about time, place, etc)
 
-Zero or more adjuncts can exist at the end of a clause. Adjuncts always
-begin with a 't'-word. The 't'-word determines the type of adjunct.
+Zero or more adjuncts can exist at the end of a clause. Adjuncts always begin
+with a 't'-word. The 't'-word determines the type of adjunct. 't'-words are
+basically prepositions in English.
 
 ### Temporal (time-related) adjuncts
 
@@ -323,6 +322,51 @@ Examples:
     I will drink with my husband
     (Literally: I will-drink with husband of me)
 
+### Causal ("because") adjuncts
+
+There are two causal 't'-words: `tozem` and `tozet`. Causal adjucts indicate
+reason, cause, and purpose.
+
+"A because B" translates to "A tozet B". `tozet` indicates that "A" was caused
+by "B". `tozet` roughly translates into "because" in English. It has the past
+tense suffix because it indicates that the adjunct "B" happened in the past,
+before "A". For example:
+
+    >>> Shi veket shacafe ko shae tozet shi volet shel
+    I drank your coffee because I wanted it
+    (Literally: I drank coffee of you because I wanted it)
+
+In the example above, "I wanted it" happened previous to, and is the cause of,
+"I drank your coffee".
+
+"X in order to Y" translates to "X tozem Y". `tozem` is the reverse of `tozet`.
+`tozem` indicates that X causes Y. It has the future tense suffix because it
+indicates that the adjunct "Y" happens in the future, after "X". `tozem`
+roughly translates to "in order to", or simply "to", in English. For example:
+
+    >>> Shi veket shacafe ko shae tozem shi navapem
+    I drank your coffee to stay awake
+    (Literally: I drank coffee of you in-order-to I will-not-sleep)
+
+Some more examples:
+
+    >>> Shi ve lut tozet shi veke shacafe
+    I am good, because I drink coffee
+    (Literally: I am good because I drink coffee)
+    (drinking coffee causes me to be good)
+
+    >>> Shi ve lut tozem shi veke shacafe
+    I am good, in order to drink coffee
+    (Literally: I am good in-order-to I drink coffee)
+    (being good will allow me to drink coffee)
+
+    >>> She venk tozet she ve
+    I eat because I'm alive
+    (Literally: I eat because I exist)
+
+    >>> Shi vese tozem she ve
+    I eat in order to live
+    (Literally: I eat in-order-to I exist)
 
 ## Conjuctions (and/but/yet/etc.)
 
@@ -336,4 +380,14 @@ English, Ash often breaks the sentence into multiple sentences. For example:
 
 ## TODO
 
-"this"/"that"/"here"/"there"/"yonder" are overlapping, and confusing
+- "this"/"that"/"here"/"there"/"yonder" are overlapping, and confusing
+
+- Need words for "what"/"when"/"where"/"why"/"how". Probably use a single word
+  that replaces the unknown parts of the sentence (including words in adjuncts).
+
+- Copula. Will probably be "ve". Will need to move adjectives before nouns/verbs
+  in order to accommodate "noun copula adjective" without ambiguity. Can also
+  avoid ambiguity by using a new copula particle instead of "ve".
+
+- The conditional mood (if this, then that)
+

@@ -7,7 +7,7 @@ import textwrap
 
 
 class Dikt(object):
-    WORD_TYPES = frozenset(('noun', 'verb', 'pronoun', 'particle', 'adjective'))
+    WORD_TYPES = frozenset(('preposition', 'noun', 'verb', 'pronoun', 'particle', 'adjective'))
 
     def __init__(self):
         self.dikt = {}
