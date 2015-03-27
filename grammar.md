@@ -1,6 +1,8 @@
-# Ash Grammar
+Ash Grammar
+===========
 
-## Common pronouns
+Common pronouns
+---------------
 
  - I/me: shi
  - us: shinen
@@ -8,7 +10,8 @@
  - you all: shaenen
 
 
-## Determiners
+Determiners
+-----------
 
  - none/no: kanes
  - the sole/singular: kalon
@@ -17,33 +20,35 @@
  - few:kalil
  - many:kafil
  - most: kamos
-
  - this: kisis
  - that: kisas
  - yon: kisos
 
-
-## Subject/Verb/Object order
+Subject/Verb/Object order
+-------------------------
 
 Ash uses subject-verb-object order, the same as English.
 
-C = Clause
-S = Subject
-V = Verb
-Od = Direct object
-Oi = Indirect object
-Q = Question
-ka = Question particle
-I = Command
-kun = Indirect object particle
+- C = Clause
+- S = Subject
+- V = Verb
+- Od = Direct object
+- Oi = Indirect object
+- Q = Question
+- ka = Question particle
+- I = Command
+- kun = Indirect object particle
 
-Intransitive verb: C -> S V
-  Transitive verb: C -> S V Od
-Ditransitive verb: C -> S V Od kun Oi
-         Question: Q -> ka C
-          Command: I -> V Od (kun Oi)
+Rules:
 
-## Tenses
+    Intransitive verb: C -> S V
+      Transitive verb: C -> S V Od
+    Ditransitive verb: C -> S V Od kun Oi
+             Question: Q -> ka C
+              Command: I -> V Od (kun Oi)
+
+Tenses
+------
 
 There are three verb tenses in Ash: past, present and future. Past-tense
 verbs have the suffix "et". Present-tense verbs have the suffix "e".
@@ -60,13 +65,15 @@ Examples:
     >>> Shi vekem shacafe
     I will drink coffee
 
-## Aspect
+Aspect
+------
 
 Ash has no aspects, just like German. This means that there is no way to
 distinguish between "I eat" and "I am eating". See the section on auxilliary
 verbs for more info.
 
-## Mood
+Mood
+----
 
 The indicative mood (factual statements) is the default.
 
@@ -102,11 +109,11 @@ that you can not use both suffixes on the same word. The ability suffix
 
 The obligation suffix "o" is used like so:
 
-   >>> Shi vekeo shacafe
-   I should drink coffee
+    >>> Shi vekeo shacafe
+    I should drink coffee
 
-
-## Verb negation
+Verb negation
+-------------
 
 Verbs are negated by adding the prefix "na".
 
@@ -119,7 +126,8 @@ Examples:
     I did not drink your coffee
     (Literally: I not-drank coffee of you)
 
-## Auxilliary verbs
+Auxilliary verbs
+----------------
 
 Ash does not have auxilliary verbs. This section will explain how English
 auxilliary verbs are eliminted when translating into Ash.
@@ -186,13 +194,13 @@ Auxilliary verbs that express certainy in English, such as "could", "may",
 "might" and "will" are not needed. Verbs are certain by default. To express
 uncertainty, use an adverb such as "possibly". For example:
 
-   >>> Shi vekem shacafe
-   I will drink coffee
-   ("vekem" translates into "will drink" because verbs are certain by default)
+    >>> Shi vekem shacafe
+    I will drink coffee
+    ("vekem" translates into "will drink" because verbs are certain by default)
 
-   >>> Shi {possibly} vekem shacafe
-   I might drink coffee
-   (Literally: I possibly will-drink coffee)
+    >>> Shi {possibly} vekem shacafe
+    I might drink coffee
+    (Literally: I possibly will-drink coffee)
 
 Ash does not have passive voice, which eliminates the need for some uses of the
 auxilliary verb "to be", such as "was", "were", and "being". For example, the
@@ -233,7 +241,8 @@ The "a" and "o" verb suffixes are mutually exclusive – that is, you can
 not use both of them on the same word.
 
 
-## Comparative
+Comparative
+-----------
 
     (less|equal|more) <adjective> than <noun>
 
@@ -254,7 +263,8 @@ Examples:
     (literally: more good than/as me)
 
 
-## Genetive case (possession)
+Genetive case (possession)
+--------------------------
 
 Possession uses the particle `ko`, which roughly translates into "of" in
 English. It is used like so:
@@ -272,7 +282,8 @@ Examples:
     (literally: uncle of husband of me)
 
 
-## Adjuncts (additional info about time, place, etc)
+Adjuncts (additional info about time, place, etc)
+-------------------------------------------------
 
 Zero or more adjuncts can exist at the end of a clause. Adjuncts always begin
 with a 't'-word. The 't'-word determines the type of adjunct. 't'-words are
@@ -368,7 +379,8 @@ Some more examples:
     I eat in order to live
     (Literally: I eat in-order-to I exist)
 
-## Conjuctions (and/but/yet/etc.)
+Conjuctions (and/but/yet/etc.)
+------------------------------
 
 There are no conjuctions (yet) in Ash. Where a conjuction is used in
 English, Ash often breaks the sentence into multiple sentences. For example:
@@ -378,7 +390,8 @@ English, Ash often breaks the sentence into multiple sentences. For example:
     (Literally: We will-drink coffee. We will-eat cake.)
 
 
-## TODO
+TODO
+----
 
 - "this"/"that"/"here"/"there"/"yonder" are overlapping, and confusing
 
