@@ -18,7 +18,12 @@ RSpec.describe Ash::Parser do
       'shi vaebet shacafe ko sashir ko selt kun shae',
       # I love your manly mother
       # lit: I love mother manly of you
-      'shi vamore sashir lashe ko shae'
+      'shi vamore sashir lashe ko shae',
+      # Eat food
+      'vese ses',
+      # Will you eat food?
+      # lit: ? you will-eat food
+      'ka shae vesem ses',
     ]
     strs.each do |s|
       puts s

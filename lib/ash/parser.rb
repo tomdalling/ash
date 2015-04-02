@@ -5,6 +5,7 @@ module Ash
     rule(:ws) { match('\s').repeat(1) }
     rule(:ws?) { ws.maybe }
 
+    rule(:ka) { str('ka') >> ws? }
     rule(:ko) { str('ko') >> ws? }
     rule(:kun) { str('kun') >> ws? }
 
@@ -22,7 +23,13 @@ module Ash
     }
 
     rule(:clause) { noun_phrase.as(:subject) >> verb_phrase.as(:verb_phrase) }
-    root(:clause)
+
+    rule(:statement) { clause.as(:statement) }
+    rule(:command) { verb_phrase.as(:command) }
+    rule(:question) { ka >> statement.as(:question) }
+    rule(:sentence) { statement | command | question }
+
+    root(:sentence)
 
     def parse(str)
       transform_ast(super(str))
