@@ -10,9 +10,11 @@ RSpec.describe Ash::Parser do
   it 'parses' do
     strs = [
       # I know
-      'shi ven',
+      'shi vene',
+      # I don't know
+      'shi navene',
       # I know you
-      'shi ven shae',
+      'shi vene shae',
       # I gave you mother nature's coffee
       # lit: I gave coffee of mother of world to you
       'shi vaebet shacafe ko sashir ko selt kun shae',

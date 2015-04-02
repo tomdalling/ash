@@ -10,7 +10,7 @@ module Ash
     rule(:kun) { str('kun') >> ws? }
 
     rule(:word) { match('[a-z]').repeat(1) >> ws? }
-    rule(:verb) { str('v') >> word }
+    rule(:verb) { str('na').maybe >> str('v') >> word }
     rule(:noun) { str('s') >> word }
     rule(:adjective) { str('l') >> word }
 
