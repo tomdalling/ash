@@ -212,7 +212,7 @@ class ProperNounNode(NounNode):
 
 
 class PronounNode(NounNode):
-    ALL_PRONOUNS = frozenset(('Shi', 'Shae', 'Shinen', 'Shanen'))
+    ALL_PRONOUNS = frozenset(('Shi', 'Shae', 'Shinen', 'Shaenen'))
 
     def __init__(self, word):
         assert word in self.ALL_PRONOUNS

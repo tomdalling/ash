@@ -237,7 +237,7 @@ example:
     >>> Shi veketo shacafe
     I should have drank coffee (in the past)
 
-The "a" and "o" verb suffixes are mutually exclusive – that is, you can
+The "a" and "o" verb suffixes are mutually exclusive -- that is, you can
 not use both of them on the same word.
 
 
