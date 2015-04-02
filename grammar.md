@@ -47,6 +47,15 @@ Rules:
              Question: Q -> ka C
               Command: I -> V Od (kun Oi)
 
+Adjectives
+----------
+
+Adjectives follow the noun, like in French:
+
+    >>> sashir lashe
+    manly mother
+    (Literally: mother manly)
+
 Tenses
 ------
 
